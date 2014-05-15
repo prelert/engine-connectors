@@ -19,9 +19,10 @@ Setting up
 Connectors
 ============
 A Connector forwards data from any data source to the Engine API for analysis. The Connector will:
-Create an Engine API job
-Query the data store
-Stream data from the data store to the Engine API job
+
+1. Create an Engine API job
+2. Query the data store
+3. Stream data from the data store to the Engine API job
 
 Simple scripts are available that use cURL. These show a variety of ways to forward data to the Engine API.
 
