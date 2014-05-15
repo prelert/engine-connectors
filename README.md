@@ -19,9 +19,9 @@ Setting up
 Connectors
 ============
 A Connector forwards data from any data source to the Engine API for analysis. The Connector will:
-1. Create an Engine API job
-2. Query the data store
-3. Stream data from the data store to the Engine API job
+Create an Engine API job
+Query the data store
+Stream data from the data store to the Engine API job
 
 Simple scripts are available that use cURL. These show a variety of ways to forward data to the Engine API.
 
@@ -29,8 +29,10 @@ Alternatively use our Java or Python clients, available on GitHub.
 
 Results Processors
 ============
-Results can be viewed using our Engine Dashboard, which is installed with the Engine API. 
+Results can be viewed using the Engine Dashboard, which is installed along with the Engine API. 
 
-Alternatively a Results Processor can be developed to querying the anomaly detection analytics. This could be as simple as creating a CSV output file, or as complex as adding to Elasticsearch. The results are provided as JSON objects to allow maximum flexibility.
+Alternatively a Results Processor can be developed to querying the anomaly detection results. This could be as simple as creating a CSV output file, or as complex as adding to Elasticsearch. 
+
+The results are provided as JSON objects to allow maximum flexibility.
 
 
