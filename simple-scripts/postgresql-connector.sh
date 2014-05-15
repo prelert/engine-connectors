@@ -52,16 +52,6 @@ curl -X POST "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID/clo
 # Note: If streaming data then use asynchronous result processor script
 
 # Get results and print to stdout as csv
-curl "http://$PRELERT_API_HOST:8080/engine/v0.3/results/$PRELERT_JOB_ID?take=1000000" | python -c "
-import json,sys
+./results-csv.sh $PRELERT_JOB_ID $PRELERT_API_HOST
 
-obj=json.load(sys.stdin)
-
-buckets=obj['documents']
-
-print 'date,id,anomalyScore'
-
-for bucket in buckets:
-    print '{0},{1},{2}'.format(bucket['timestamp'], bucket['id'], bucket['anomalyScore'])
-"
 
