@@ -19,28 +19,14 @@
 ############################################################################
 
 
-# A simple Anomaly Detective Engine connector to analyze a batch of data from a MySQL data store needs to:
-# 1. Create an Engine API job
-# 2. Query the data store
-# 3. Stream data from the data store to the Engine API job
+# A simple Anomaly Detective Engine connector to analyze a batch of data from a CSV file.
 
-# For example, if time series data is stored in MySQL as follows:
-# mysql> select time,value from time_series_points where time_series_id=4118 order by time;
-# +---------------------+-------+
-# | time                | value |
-# +---------------------+-------+
-# | 2010-02-10 06:21:00 |   409 |
-# | 2010-02-10 06:21:30 |   409 |
-# | 2010-02-10 06:22:00 |   409 |
-# | 2010-02-10 06:22:30 |   409 |
-# | 2010-02-10 06:23:00 |   409 |
-# | 2010-02-10 06:23:30 |   409 |
+# This script effectively does the same analysis as the tutorial, but with the various
+# steps automated instead of being entered manually
 
-# Note: IMPORTANT to order by time
+# Note: The records in the CSV file MUST be ordered by time
 
-# Set appropriately for your database
-MYSQL_USER=root
-MYSQL_DB=dbname
+CSV_FILE=/home/dave/farequote_ISO_8601.csv
 
 PRELERT_API_HOST=localhost
 
@@ -49,9 +35,10 @@ PRELERT_JOB_ID=`\
 curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/engine/v0.3/jobs" -d '{
         "analysisConfig" : {
         "bucketSpan":3600,
-        "detectors" :[{"function":"max","fieldName":"value"}]
+        "detectors" :[{"function":"metric","fieldName":"responsetime","byFieldName":"airline"}]
 },
     "dataDescription" : {
+        "fieldDelimiter":",",
         "timeField":"time",
         "timeFormat":"yyyy-MM-dd HH:mm:ss"
     }
@@ -60,11 +47,10 @@ curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/
 
 echo "Created analysis job $PRELERT_JOB_ID"
 
-echo "Querying MySQL and streaming results to Engine API"
+echo "Uploading $CSV_FILE"
 
-# Query database (requesting tab separated output) and stream to Engine API
-mysql -u "$MYSQL_USER" -p -D "$MYSQL_DB" -B -e "select time,value from time_series_points where time_series_id=4118 order by time;" | \
-curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID"
+# Upload to Engine API
+curl -X POST -T "$CSV_FILE" "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID"
 
 echo "Done."
 

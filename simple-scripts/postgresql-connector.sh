@@ -74,7 +74,7 @@ curl -X POST "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID/clo
 
 
 # Anomaly detection analysis results are now available to query
-# Note: If streaming data then use asynchronous result processor script
+# Note: If streaming real-time data then use asynchronous result processor script
 
 # Get results and print to stdout as csv
 ./results-csv.sh $PRELERT_JOB_ID $PRELERT_API_HOST
