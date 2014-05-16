@@ -24,7 +24,12 @@
 # This script effectively does the same analysis as the tutorial, but with the various
 # steps automated instead of being entered manually
 
-# Note: The records in the CSV file MUST be ordered by time
+# If you haven't already got it, the tutorial data can be downloaded from:
+# http://s3.amazonaws.com/prelert_demo/farequote_ISO_8601.csv
+
+# Note: The records in the CSV file MUST be ordered by time - they are in the tutorial
+#       data but if you substitute a CSV file of your own you must make sure it's
+#       sorted into ascending time order
 
 CSV_FILE=/home/dave/farequote_ISO_8601.csv
 
