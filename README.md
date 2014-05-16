@@ -32,8 +32,6 @@ Results Processors
 ============
 Results can be viewed using the Engine Dashboard, which is installed along with the Engine API. 
 
-Alternatively a Results Processor can be developed to querying the anomaly detection results. This could be as simple as creating a CSV output, or as complex as adding to Elasticsearch. 
-
-The results are provided as JSON objects to allow maximum flexibility.
+Alternatively a Results Processor can be developed to query the anomaly detection results. The results are available as JSON objects. This is an open data format that enables easy data interchange. Results processing could be as simple as creating a CSV output, or more advanced such as adding back to view alongside your operational data.
 
 
