@@ -19,32 +19,32 @@
 ############################################################################
 
 
-# A simple Anomaly Detective Engine connector to analyze a batch of data from a PostgreSQL data store needs to:
+# A simple Anomaly Detective Engine connector to analyze a batch of data from a MySQL data store needs to:
 # 1. Create an Engine API job
 # 2. Query the data store
 # 3. Stream data from the data store to the Engine API job
 
-# For example, if time series data is stored in PostgreSQL as follows:
-# dbname=# select time,value from time_series_points where time_series_id=1395 order by time;
-# time                   |   value
-# ================================
-# 2011-03-01 05:01:00+00 |    825
-# 2011-03-01 05:02:00+00 |    513
-# 2011-03-01 05:03:00+00 |    480
-# 2011-03-01 05:04:00+00 |    492
-# 2011-03-01 05:05:00+00 |    473
+# For example, if time series data is stored in MySQL as follows:
+# mysql> select time,value from time_series_points where time_series_id=4118 order by time;
+# +---------------------+-------+
+# | time                | value |
+# +---------------------+-------+
+# | 2010-02-10 06:21:00 |   409 |
+# | 2010-02-10 06:21:30 |   409 |
+# | 2010-02-10 06:22:00 |   409 |
+# | 2010-02-10 06:22:30 |   409 |
+# | 2010-02-10 06:23:00 |   409 |
+# | 2010-02-10 06:23:30 |   409 |
 
 # Note: IMPORTANT to order by time
 
 # Set appropriately for your database
-PGUSER=dave
-export PGUSER
-PGDATABASE=dbname
-export PGDATABASE
+MYSQL_USER=root
+MYSQL_DB=dbname
 
 PRELERT_API_HOST=localhost
 
-# Create job and record JobId
+# Create job and record JobId (note default fieldDelimiter is tab)
 PRELERT_JOB_ID=`\
 curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/engine/v0.3/jobs" -d '{
         "analysisConfig" : {
@@ -52,19 +52,18 @@ curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/
         "detectors" :[{"function":"max","fieldName":"value"}]
 },
     "dataDescription" : {
-        "fieldDelimiter":",",
         "timeField":"time",
-        "timeFormat":"yyyy-MM-dd HH:mm:ssX"
+        "timeFormat":"yyyy-MM-dd HH:mm:ss"
     }
 }' | awk -F'"' '{ print $4; }' \
 `
 
 echo "Created analysis job $PRELERT_JOB_ID"
 
-echo "Querying PostgreSQL and streaming results to Engine API"
+echo "Querying MySQL and streaming results to Engine API"
 
-# Query database and stream to Engine API
-psql -F, -A -c "select time,value from time_series_points where time_series_id=1395 order by time;" | \
+# Query database (requesting tab separated output) and stream to Engine API
+mysql -u "$MYSQL_USER" -p -D "$MYSQL_DB" -B -e "select time,value from time_series_points where time_series_id=4118 order by time;" | \
 curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID"
 
 echo "Done."
