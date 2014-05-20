@@ -1,7 +1,7 @@
 Anomaly Detective Engine Connectors
 =================
 
-These sample connectors show how to interface with the Anomaly Detective Engine API.
+These sample connectors show how to interface with the Prelert Anomaly Detective Engine API.
 
 Anomaly Detective analytics uses artificial intelligence in the form of unsupervised machine learning and advanced computational mathematics to process huge volumes of streaming data. It automatically learns normal behavior patterns represented by the data, then identifies and cross-correlates the anomalies.
 
