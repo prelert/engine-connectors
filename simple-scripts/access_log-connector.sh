@@ -41,7 +41,7 @@ PRELERT_API_HOST=localhost
 # Create job and record JobId (the fieldDelimiter is space in this case and
 # we're happy with the default quote character)
 PRELERT_JOB_ID=`\
-curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/engine/v0.3/jobs" -d '{
+curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/engine/v1/jobs" -d '{
         "analysisConfig" : {
         "bucketSpan":3600,
         "detectors" :[{"function":"high_count","byFieldName":"status"}]
@@ -63,12 +63,12 @@ echo "Uploading $INPUT_FILE"
 (echo 'clientip ident user time request status bytes referer useragent' && cat "$INPUT_FILE") | \
 sed 's/\[/"/' | \
 sed 's/\]/"/' | \
-curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID"
+curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID"
 
 echo "Done."
 
 # Close job - this will flush analytics results
-curl -X POST "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID/close"
+curl -X POST "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID/close"
 
 
 # Anomaly detection analysis results are now available to query

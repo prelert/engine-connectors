@@ -46,7 +46,7 @@ PRELERT_API_HOST=localhost
 
 # Create job and record JobId
 PRELERT_JOB_ID=`\
-curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/engine/v0.3/jobs" -d '{
+curl -X POST -H 'Content-Type: application/json' "http://$PRELERT_API_HOST:8080/engine/v1/jobs" -d '{
         "analysisConfig" : {
         "bucketSpan":3600,
         "detectors" :[{"function":"max","fieldName":"value"}]
@@ -65,12 +65,12 @@ echo "Querying PostgreSQL and streaming results to Engine API"
 
 # Query database and stream to Engine API
 psql -F, -A -c "select time,value from time_series_points where time_series_id=1395 order by time;" | \
-curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID"
+curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID"
 
 echo "Done."
 
 # Close job - this will flush analytics results
-curl -X POST "http://$PRELERT_API_HOST:8080/engine/v0.3/data/$PRELERT_JOB_ID/close"
+curl -X POST "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID/close"
 
 
 # Anomaly detection analysis results are now available to query

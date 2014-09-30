@@ -31,7 +31,7 @@ echo "Getting results for $PRELERT_JOB_ID from $PRELERT_API_HOST"
 
 # Get results and print to stdout as csv
 # Gets first million rows
-curl "http://$PRELERT_API_HOST:8080/engine/v0.3/results/$PRELERT_JOB_ID?take=1000000" | python -c "
+curl "http://$PRELERT_API_HOST:8080/engine/v1/results/$PRELERT_JOB_ID/buckets?take=1000000" | python -c "
 import json,sys
 
 obj=json.load(sys.stdin)
