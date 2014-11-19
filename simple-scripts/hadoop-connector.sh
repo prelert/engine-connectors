@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Author: Asif J
+# Authors: Anasuya and Asif J - Wipro
 
 # A simple Anomaly Detective Engine connector to analyze a batch of data from a hadoop data store needs to:
 # 1. Create an Engine API job
@@ -30,6 +30,7 @@ DFS_DATANODE_HTTP_PORT=50075
 NAMENODE_RPC_ADDRESS=192.168.122.101
 NAMENODE_RPC_PORT=8020
 
+# Hadoop file system path where the file residing.
 HDFS_PATH=/user/hdfs/
 FILE_NAME=farequote.csv
 
@@ -55,13 +56,6 @@ curl --globoff -X POST -H 'Content-Type: application/json' 'http://localhost:808
 echo "Created analysis job $PRELERT_JOB_ID"
 
 echo "Querying Hadoop and streaming results to Engine API"
-
-# Query database (requesting tab separated output) and stream to Engine API
-#curl -i -L "http://$DFS_DATANODE_HTTP_ADDRESS:$DFS_DATANODE_HTTP_PORT/webhdfs/v1$HDFS_PATH$FILE_NAME?op=OPEN&namenoderpcaddress=$NAMENODE_RPC_ADDRESS:$NAMENODE_RPC_PORT"
-
-#curl -L --globoff "http://$DFS_DATANODE_HTTP_ADDRESS:$DFS_DATANODE_HTTP_PORT/webhdfs/v1$HDFS_PATH$FILE_NAME?op=OPEN&namenoderpcaddress=$NAMENODE_RPC_ADDRESS:$NAMENODE_RPC_PORT" > tmp
-#curl -X POST -T tmp 'http://localhost:8080/engine/v1/data/$PRELERT_JOB_ID'
-
 
 curl -L --globoff "http://$DFS_DATANODE_HTTP_ADDRESS:$DFS_DATANODE_HTTP_PORT/webhdfs/v1$HDFS_PATH$FILE_NAME?op=OPEN&namenoderpcaddress=$NAMENODE_RPC_ADDRESS:$NAMENODE_RPC_PORT" | \
 curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID"
