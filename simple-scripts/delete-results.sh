@@ -18,13 +18,15 @@
 #                                                                          #
 ############################################################################
 
-# A simple Anomaly Detective Engine connector to delete results dated before
-# the given timestamp from the Elasticsearch index corresponding to the given job id
+# A simple Anomaly Detective Engine connector to delete results dated up until
+# the current date minus the given expiry days from the Elasticsearch index
+# corresponding to the given job id.
 
 usage() {
-	echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <timestamp>" 1>&2;
+	echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <expiry-days>" 1>&2;
 	exit 1;
 }
+
 
 ES_HOST='localhost'
 ES_PORT='9200'
@@ -49,11 +51,13 @@ done
 shift $((OPTIND-1))
 
 JOB_ID=$1
-TIMESTAMP=$2
+EXPIRY_DAYS=$2
 
-if [ -z "${JOB_ID}" ] || [ -z "${TIMESTAMP}" ]; then
+if [ -z "${JOB_ID}" ] || [ -z "${EXPIRY_DAYS}" ]; then
     usage
 fi
+
+TIMESTAMP=`date -v -${EXPIRY_DAYS}d +%Y-%m-%d`
 
 echo "Deleting results before $TIMESTAMP for job $JOB_ID from $ES_HOST:$ES_PORT"
 
