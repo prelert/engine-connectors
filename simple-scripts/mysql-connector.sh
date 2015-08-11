@@ -2,7 +2,7 @@
 
 ############################################################################
 #                                                                          #
-# Copyright 2014 Prelert Ltd                                               #
+# Copyright 2014-2015 Prelert Ltd                                          #
 #                                                                          #
 # Licensed under the Apache License, Version 2.0 (the "License");          #
 # you may not use this file except in compliance with the License.         #
@@ -62,9 +62,14 @@ echo "Created analysis job $PRELERT_JOB_ID"
 
 echo "Querying MySQL and streaming results to Engine API"
 
-# Query database (requesting tab separated output) and stream to Engine API
-mysql -u "$MYSQL_USER" -p -D "$MYSQL_DB" -B -e "select time,value from time_series_points where time_series_id=4118 order by time;" | \
-curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID"
+# Query database (requesting tab separated output) and stream to Engine API.
+# Set network timeouts high so that end-of-bucket processing doesn't cause
+# the database connection to drop.
+mysql -u "$MYSQL_USER" -p -D "$MYSQL_DB" -B -e "
+set net_read_timeout = 1000;
+set net_write_timeout = 1000;
+select time, value from time_series_points where time_series_id = 4118 order by time;
+" | curl -X POST -T - "http://$PRELERT_API_HOST:8080/engine/v1/data/$PRELERT_JOB_ID"
 
 echo "Done."
 
