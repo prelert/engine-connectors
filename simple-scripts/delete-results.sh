@@ -24,7 +24,6 @@
 
 usage() {
 	echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <expiry-days>" 1>&2;
-	echo "eg - linux delete older than 30 days: $0 -f 20151117122205-00010 -30" 1>&2;
 	exit 1;
 }
 
@@ -58,10 +57,23 @@ if [ -z "${JOB_ID}" ] || [ -z "${EXPIRY_DAYS}" ]; then
     usage
 fi
 
-# Mac-OSX
-#TIMESTAMP=`date -v -${EXPIRY_DAYS}d +%Y-%m-%d`
-# Linux (tested on RHEL, CentOS)
-TIMESTAMP=`date -u --date="${EXPIRY_DAYS} day" +%Y-%m-%d`
+if [[ "x$EXPIRY_DAYS" == "x-"* ]]; then
+  EXPIRY_DAYS=${EXPIRY_DAYS:1}
+fi
+
+case `uname` in
+
+  Darwin)
+    TIMESTAMP=`date -v -${EXPIRY_DAYS}d +%Y-%m-%d`
+    ;;
+  Linux)
+    TIMESTAMP=`date -u --date="-${EXPIRY_DAYS} day" +%Y-%m-%d`
+    ;;
+  *)
+    echo "Platform not supported. Exiting.";
+    exit 1;
+    ;;
+esac
 
 echo "Deleting results before $TIMESTAMP for job $JOB_ID from $ES_HOST:$ES_PORT"
 
