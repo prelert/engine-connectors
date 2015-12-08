@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ############################################################################
 #                                                                          #
@@ -23,8 +23,8 @@
 # corresponding to the given job id.
 
 usage() {
-	echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <expiry-days>" 1>&2;
-	exit 1;
+    echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <expiry-days>" 1>&2;
+    exit 1;
 }
 
 
@@ -71,7 +71,7 @@ case `uname` in
     ;;
   *)
     echo "Platform not supported. Exiting.";
-    exit 1;
+    exit 2;
     ;;
 esac
 
