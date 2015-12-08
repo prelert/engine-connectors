@@ -2,7 +2,7 @@
 
 ############################################################################
 #                                                                          #
-# Copyright 2014 Prelert Ltd                                               #
+# Copyright 2014-2015 Prelert Ltd                                          #
 #                                                                          #
 # Licensed under the Apache License, Version 2.0 (the "License");          #
 # you may not use this file except in compliance with the License.         #
@@ -23,13 +23,13 @@
 # corresponding to the given job id.
 
 usage() {
-    echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <expiry-days>" 1>&2;
-    exit 1;
+    echo "Usage: $0 [-f] [-h <elasticsearch-host>] [-p <elasticsearch-port>] <job-id> <expiry-days>" 1>&2
+    exit 1
 }
 
 
-ES_HOST='localhost'
-ES_PORT='9200'
+ES_HOST=localhost
+ES_PORT=9200
 FORCE=0
 
 while getopts ":fh:p:" opt; do
@@ -58,21 +58,21 @@ if [ -z "${JOB_ID}" ] || [ -z "${EXPIRY_DAYS}" ]; then
 fi
 
 if [[ "x$EXPIRY_DAYS" == "x-"* ]]; then
-  EXPIRY_DAYS=${EXPIRY_DAYS:1}
+    EXPIRY_DAYS=${EXPIRY_DAYS:1}
 fi
 
 case `uname` in
 
-  Darwin)
-    TIMESTAMP=`date -v -${EXPIRY_DAYS}d +%Y-%m-%d`
-    ;;
-  Linux)
-    TIMESTAMP=`date -u --date="-${EXPIRY_DAYS} day" +%Y-%m-%d`
-    ;;
-  *)
-    echo "Platform not supported. Exiting.";
-    exit 2;
-    ;;
+    Darwin)
+        TIMESTAMP=`date -v -${EXPIRY_DAYS}d +%Y-%m-%d`
+        ;;
+    Linux)
+        TIMESTAMP=`date -u --date="-${EXPIRY_DAYS} day" +%Y-%m-%d`
+        ;;
+    *)
+        echo "Platform not supported. Exiting." 1>&2
+        exit 2
+        ;;
 esac
 
 echo "Deleting results before $TIMESTAMP for job $JOB_ID from $ES_HOST:$ES_PORT"
@@ -89,6 +89,11 @@ if [ ${FORCE} -eq 0 ]; then
     esac
 fi
 
-curl -XDELETE "http://${ES_HOST}:${ES_PORT}/${JOB_ID}/bucket,record/_query?pretty=1" -d "{ \"query\" : { \"range\" : { \"@timestamp\" : { \"lt\" : \"${TIMESTAMP}\" }}}}"
+curl -XDELETE "http://${ES_HOST}:${ES_PORT}/${JOB_ID}/bucket,record/_query?pretty=true" -d "{ \"query\" : { \"range\" : { \"@timestamp\" : { \"lt\" : \"${TIMESTAMP}\" }}}}"
+
+echo "Optimizing index to free disk space"
+
+curl -XPOST "http://${ES_HOST}:${ES_PORT}/${JOB_ID}/_optimize?only_expunge_deletes=true&pretty=true"
 
 echo "Done"
+
